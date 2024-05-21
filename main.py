@@ -1,4 +1,5 @@
 from math import sin
+from math import pi
 from random import randrange
 from time import sleep
 from neopixel import Neopixel
@@ -109,6 +110,74 @@ def colorRandom(cycle, brightness, strip):
         strip.show()
         timer = timer + 1
 
+def colorFallSolid(cycle, color, brightness, strip):
+    timer = 0
+    cycle = cycle
+
+    strip.brightness(brightness)
+    num_side_pixels = round(numpix/2)
+    while timer < cycle:
+        
+        for pixel in range(0, num_side_pixels):
+            pixel_pair = abs(pixel-(numpix-1))
+            # print(str(pixel) + " ---- " + str(pixel_pair))
+            if (pixel-timer) % 4 == 0:
+                strip.set_pixel(pixel, color)
+                strip.set_pixel(pixel_pair, color)
+            elif (pixel-timer) % 4 == 1:
+                strip.set_pixel(pixel, (.6*color[0], .6*color[1], .6*color[2]))
+                strip.set_pixel(pixel_pair, (.6*color[0], .6*color[1], .6*color[2]))
+            elif (pixel-timer) % 4 == 2:
+                strip.set_pixel(pixel, (.3*color[0], .3*color[1], .3*color[2]))
+                strip.set_pixel(pixel_pair, (.3*color[0], .3*color[1], .3*color[2]))
+            elif (pixel-timer) % 3 == 3:
+                strip.set_pixel(pixel, (0, 0, 0))
+                strip.set_pixel(pixel_pair, (0, 0, 0))
+        strip.show()
+        sleep(.05)
+        timer = timer + 1
+
+def colorFallRainbow(cycle, brightness, strip):
+    timer = 0
+    cycle = cycle
+
+    strip.brightness(brightness)
+    num_side_pixels = round(numpix/2)
+    while timer < cycle:
+        hue = timer * 128 % 65535
+
+        for pixel in range(0, num_side_pixels-1):
+            pixel_pair = abs(pixel-(numpix-1))
+            # print(str(pixel) + " ---- " + str(pixel_pair))
+            if (pixel-timer) % 4 == 0:
+                strip.set_pixel(pixel, strip.colorHSV(hue, 255, 255))
+                strip.set_pixel(pixel_pair, strip.colorHSV(hue, 255, 255))
+            elif (pixel-timer) % 4 == 1:
+                strip.set_pixel(pixel, strip.colorHSV(hue, 255, int(.6*255)))
+                strip.set_pixel(pixel_pair, strip.colorHSV(hue, 255, int(.6*255)))
+            elif (pixel-timer) % 4 == 2:
+                strip.set_pixel(pixel, strip.colorHSV(hue, 255, 255 // 3))
+                strip.set_pixel(pixel_pair, strip.colorHSV(hue, 255, 255 // 3))
+            elif (pixel-timer) % 4 == 3:
+                strip.set_pixel(pixel, (0, 0, 0))
+                strip.set_pixel(pixel_pair, (0, 0, 0))
+        strip.show()
+        sleep(.05)
+        timer = timer + 1
+
+def colorFade(cycle, brightness, strip):
+    timer = 0
+    cycle = cycle
+
+    strip.brightness(brightness)
+    while timer < cycle:
+        hue = timer * 128 % 65535
+        color = strip.colorHSV(hue, 255, 255)
+        strip.fill(color)
+        strip.show()
+        sleep(.025)
+        timer = timer + 1
+
 def getSolidColor():
     colorchoice = solid_colors[randrange(0, len(solid_colors))]
     return colorchoice
@@ -121,8 +190,7 @@ def getCycleTime():
     cycletime = randrange(10000,100000)
     return cycletime
 
-
-actions = [colorTransition, colorWave, colorBreathing, colorWheel, colorChase, colorRandom]
+actions = [colorTransition, colorWave, colorBreathing, colorWheel, colorChase, colorRandom, colorFallSolid, colorFallRainbow, colorFade]
 
 while True:
     # colorTransition(purple, 20, strip)
@@ -134,8 +202,9 @@ while True:
     # colorWheel(30000, [green, purple], 50, strip)
     # colorChase(1000, purple, 50, strip)
 
-    action = randrange(0, len(actions))
-    # action = 5
+    
+    # action = randrange(0, len(actions))
+    action = 7
 
     if action == 0:
         colorTransition(getSolidColor(), randrange(20,50), strip)
@@ -149,3 +218,9 @@ while True:
         colorChase(getCycleTime(), getSolidColor(), 50, strip)
     elif action == 5:
         colorRandom(getCycleTime(), 50, strip)
+    elif action == 6:
+        colorFallSolid(getCycleTime(), getSolidColor(), 50, strip)
+    elif action == 7:
+        colorFallRainbow(getCycleTime(), 50, strip)
+    elif action == 8:
+        colorFade(getCycleTime(), 50, strip)
