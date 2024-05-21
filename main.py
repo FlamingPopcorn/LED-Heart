@@ -203,8 +203,8 @@ while True:
     # colorChase(1000, purple, 50, strip)
 
     
-    # action = randrange(0, len(actions))
-    action = 7
+    action = randrange(0, len(actions))
+    # action = 7
 
     if action == 0:
         colorTransition(getSolidColor(), randrange(20,50), strip)
