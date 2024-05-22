@@ -25,7 +25,7 @@ color_patterns = [[blue, violet, green, purple],
 
 colors = colors_rgb
 
-#strip.brightness(50)
+# strip.brightness(50)
 
 def colorWave(cycle, colorStart, colorEnd, strip):
     timer = 0
@@ -63,7 +63,7 @@ def colorBreathing(cycle, color, minBrightness, maxBrightness, strip):
 
     colorTransition(color, 50, strip)
     while timer < cycle:
-        strip.brightness((maxBrightness/2)*sin(timer/30.0)+minBrightness)
+        strip.brightness(((maxBrightness-minBrightness)/2)*sin(timer/25.0)+((minBrightness+maxBrightness)/2))
         strip.fill(color)
         sleep(0.01)
         strip.show()
@@ -120,7 +120,6 @@ def colorFallSolid(cycle, color, brightness, strip):
         
         for pixel in range(0, num_side_pixels):
             pixel_pair = abs(pixel-(numpix-1))
-            # print(str(pixel) + " ---- " + str(pixel_pair))
             if (pixel-timer) % 4 == 0:
                 strip.set_pixel(pixel, color)
                 strip.set_pixel(pixel_pair, color)
@@ -130,6 +129,32 @@ def colorFallSolid(cycle, color, brightness, strip):
             elif (pixel-timer) % 4 == 2:
                 strip.set_pixel(pixel, (.3*color[0], .3*color[1], .3*color[2]))
                 strip.set_pixel(pixel_pair, (.3*color[0], .3*color[1], .3*color[2]))
+            elif (pixel-timer) % 3 == 3:
+                strip.set_pixel(pixel, (0, 0, 0))
+                strip.set_pixel(pixel_pair, (0, 0, 0))
+        strip.show()
+        sleep(.05)
+        timer = timer + 1
+
+def colorFallPair(cycle, colorL, colorR, brightness, strip):
+    timer = 0
+    cycle = cycle
+
+    strip.brightness(brightness)
+    num_side_pixels = round(numpix/2)
+    while timer < cycle:
+        
+        for pixel in range(0, num_side_pixels):
+            pixel_pair = abs(pixel-(numpix-1))
+            if (pixel-timer) % 4 == 0:
+                strip.set_pixel(pixel, colorR)
+                strip.set_pixel(pixel_pair, colorL)
+            elif (pixel-timer) % 4 == 1:
+                strip.set_pixel(pixel, (.6*colorR[0], .6*colorR[1], .6*colorR[2]))
+                strip.set_pixel(pixel_pair, (.6*colorL[0], .6*colorL[1], .6*colorL[2]))
+            elif (pixel-timer) % 4 == 2:
+                strip.set_pixel(pixel, (.3*colorR[0], .3*colorR[1], .3*colorR[2]))
+                strip.set_pixel(pixel_pair, (.3*colorL[0], .3*colorL[1], .3*colorL[2]))
             elif (pixel-timer) % 3 == 3:
                 strip.set_pixel(pixel, (0, 0, 0))
                 strip.set_pixel(pixel_pair, (0, 0, 0))
@@ -148,7 +173,6 @@ def colorFallRainbow(cycle, brightness, strip):
 
         for pixel in range(0, num_side_pixels-1):
             pixel_pair = abs(pixel-(numpix-1))
-            # print(str(pixel) + " ---- " + str(pixel_pair))
             if (pixel-timer) % 4 == 0:
                 strip.set_pixel(pixel, strip.colorHSV(hue, 255, 255))
                 strip.set_pixel(pixel_pair, strip.colorHSV(hue, 255, 255))
@@ -190,21 +214,11 @@ def getCycleTime():
     cycletime = randrange(10000,100000)
     return cycletime
 
-actions = [colorTransition, colorWave, colorBreathing, colorWheel, colorChase, colorRandom, colorFallSolid, colorFallRainbow, colorFade]
+actions = [colorTransition, colorWave, colorBreathing, colorWheel, colorChase, colorRandom, colorFallSolid, colorFallPair, colorFallRainbow, colorFade]
 
-while True:
-    # colorTransition(purple, 20, strip)
-    # colorWave(40000, violet, blue, strip)
-    # colorBreathing(20000, purple, 20, 80, strip)
-    # colorTransition(blue, 40, strip)
-    # colorWheel(1000, [blue, green, purple], 50, strip)
-    # colorTransition(green, 60, strip)
-    # colorWheel(30000, [green, purple], 50, strip)
-    # colorChase(1000, purple, 50, strip)
-
-    
+while True:    
     action = randrange(0, len(actions))
-    # action = 7
+    # action = 2
 
     if action == 0:
         colorTransition(getSolidColor(), randrange(20,50), strip)
@@ -221,6 +235,8 @@ while True:
     elif action == 6:
         colorFallSolid(getCycleTime(), getSolidColor(), 50, strip)
     elif action == 7:
-        colorFallRainbow(getCycleTime(), 50, strip)
+        colorFallPair(getCycleTime(), getSolidColor(), getSolidColor(), 50, strip)
     elif action == 8:
+        colorFallRainbow(getCycleTime(), 50, strip)
+    elif action == 9:
         colorFade(getCycleTime(), 50, strip)
